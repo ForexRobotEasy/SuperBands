@@ -1,0 +1,74 @@
+
+//+------------------------------------------------------------------+
+//|                                        SuperBands.mq5            |
+//|                        Copyright 2022, Forex Robot Easy Team      |
+//|                        Developer's site: forexroboteasy.com       |
+//+------------------------------------------------------------------+
+
+//--- Indicator initialization function
+int OnInit()
+{
+   //--- Indicator buffers mapping
+   IndicatorBuffers(1);
+   //--- Set buffer 0 as the main indicator line
+   SetIndexBuffer(0, ExtMapBuffer);
+
+   //--- Indicator graphics settings
+   SetIndexStyle(0, DRAW_LINE);
+   SetIndexLabel(0, 'SuperBands');
+
+   //--- Indicator parameters
+   SetIndexShift(0, 0);
+
+   //--- Return value of initialization
+   return(INIT_SUCCEEDED);
+}
+
+//--- Indicator calculation function
+int OnCalculate(const int rates_total,
+                const int prev_calculated,
+                const datetime &time[],
+                const double &open[],
+                const double &high[],
+                const double &low[],
+                const double &close[],
+                const long &tick_volume[],
+                const long &volume[],
+                const int &spread[])
+{
+   //--- Check the number of bars to calculate
+   if (rates_total < 1)
+      return(0);
+
+   //--- Check the number of bars to recalculate
+   int limit = MathMin(rates_total, prev_calculated);
+   
+   //--- Calculation loop
+   for (int i = limit; i < rates_total; i++)
+   {
+      //--- Calculate SuperBands indicator values
+      double upper_band = High[i] + (High[i] - Low[i])/2;
+      double lower_band = Low[i] - (High[i] - Low[i])/2;
+
+      //--- Set indicator value
+      ExtMapBuffer[i] = close[i];
+
+      //--- Check for buying opportunity
+      if (close[i] < lower_band)
+      {
+         //--- Execute buying trade
+         BuyTrade();
+      }
+   }
+
+   //--- Return value of prev_calculated for the next call
+   return(rates_total);
+}
+
+//--- Function to execute a buying trade
+void BuyTrade()
+{
+   //--- Implement your buying trade execution logic here
+   //--- For example, send a buy order to your broker
+   //--- and handle the trade execution
+}
